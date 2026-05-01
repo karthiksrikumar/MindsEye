@@ -1,1 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mind's Eye Literary Magazine &middot; South Windsor High School</title>
+  <link rel="icon" type="image/png" href="images/image.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <style>
+    /* ======================================================
+       VARIABLES
+    ====================================================== */
+    :root {
+      --cream:       #F5F0E6;
+      --cream-dark:  #EDE5D2;
+      --ink:         #1B1B19;
+      --navy:        #0D1E3C;
+      --blue:        #2B5C8A;
+      --mid-blue:    #4A7DAA;
+      --baby-blue:   #6FA3C7;
+      --pale-blue:   #C8DEF0;
+      --rule:        #C6B59C;
+      --muted:       #7A7060;
+      --sidebar-w:   215px;
+      --font-display:'Playfair Display', Georgia, serif;
+      --font-body:   'EB Garamond', Georgia, serif;
+      --font-light:  'Cormorant Garamond', Georgia, serif;
+      --ease-out:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
 
+    /* ======================================================
+       RESET
+    ====================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 18px;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--font-body);
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* Film grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ======================================================
+       PROGRESS BAR
+    ====================================================== */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: var(--sidebar-w);
+      right: 0;
+      height: 2px;
+      background: var(--baby-blue);
+      transform-origin: left;
+      transform: scaleX(0);
+      z-index: 9000;
+      transition: transform 0.08s linear;
+    }
+
+    /* ======================================================
+       SIDEBAR
+    ====================================================== */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      z-index: 800;
+      border-right: 1px solid rgba(111, 163, 199, 0.12);
+    }
+
+    .sb-masthead {
+      padding: 2.2rem 1.6rem 1.8rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .sb-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+
+    .sb-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.35rem;
+    }
+
+    .sb-subtitle {
+      font-family: var(--font-light);
+      font-size: 0.6rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--baby-blue);
+      line-height: 1.6;
+    }
+
+    #sidebar nav {
+      flex: 1;
+      padding: 1.6rem 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-label {
+      font-family: var(--font-light);
+      font-size: 0.5rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      padding: 0 1.6rem 0.6rem;
+    }
+
+    .nav-link {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      padding: 0.65rem 1.6rem;
+      position: relative;
+      cursor: pointer;
+      transition: color 0.3s, padding-left 0.35s var(--ease-out);
+      letter-spacing: 0.01em;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2px;
+      height: 0;
+      background: var(--baby-blue);
+      transition: height 0.35s var(--ease-out);
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #fff;
+      padding-left: 2.2rem;
+    }
+
+    .nav-link.active::before { height: 55%; }
+
+    .sb-foot {
+      padding: 1.4rem 1.6rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .sb-foot-text {
+      font-family: var(--font-light);
+      font-size: 0.58rem;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.08em;
+      line-height: 1.7;
+    }
+
+    .sb-issue {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.62rem;
+      color: var(--baby-blue);
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    /* ======================================================
+       MAIN
+    ====================================================== */
+    #main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+    }
+
+    /* ======================================================
+       SECTION BASE
+    ====================================================== */
+    .section {
+      position: relative;
+    }
+
+    .section-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 6rem 4.5rem;
+    }
+
+    /* ======================================================
+       CHAPTER DIVIDER
+    ====================================================== */
+    .ch-divider {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 2.8rem;
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    .ch-divider .ch-label {
+      font-family: var(--font-light);
+      font-size: 0.58rem;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--baby-blue);
+      white-space: nowrap;
+    }
+
+    .ch-divider .ch-rule {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--baby-blue), transparent);
+      opacity: 0.5;
+    }
+
+    /* ======================================================
+       SHARED TYPOGRAPHY
+    ====================================================== */
+    .section-eyebrow {
+      font-family: var(--font-light);
+      font-size: 0.6rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.9rem;
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    .section-heading em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--blue);
+    }
+
+    .body-text {
+      font-family: var(--font-body);
+      font-size: 1.02rem;
+      line-height: 1.9;
+      color: var(--ink);
+      max-width: 640px;
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    .body-text + .body-text { margin-top: 1.4rem; }
+
+    /* Drop cap */
+    .drop-cap::first-letter {
+      font-family: var(--font-display);
+      font-size: 4.2em;
+      font-weight: 700;
+      float: left;
+      line-height: 0.78;
+      margin: 0.06em 0.12em 0 0;
+      color: var(--blue);
+    }
+
+    /* Pull quote */
+    .pull-quote {
+      border-left: 3px solid var(--baby-blue);
+      margin: 3.2rem 0 3.2rem 2.5rem;
+      padding: 0.4rem 0 0.4rem 2rem;
+      opacity: 0;
+      transform: translateX(-18px);
+    }
+
+    .pull-quote blockquote {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--navy);
+      line-height: 1.45;
+      margin-bottom: 0.8rem;
+    }
+
+    .pull-quote cite {
+      font-family: var(--font-light);
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-style: normal;
+    }
+
+    /* ======================================================
+       SECTION I : HERO / OVERVIEW
+    ====================================================== */
+    #overview {
+      background: var(--navy);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('images/image.png');
+      background-size: cover;
+      background-position: center top;
+      opacity: 0.1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 6rem 4.5rem 10rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-flag {
+      font-family: var(--font-light);
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--baby-blue);
+      margin-bottom: 2.8rem;
+      opacity: 0;
+    }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 10vw, 8rem);
+      font-weight: 700;
+      color: #fff;
+      line-height: 0.9;
+      letter-spacing: -0.025em;
+      margin-bottom: 1.8rem;
+      overflow: hidden;
+    }
+
+    .word-wrap { display: inline-block; overflow: hidden; }
+    .word { display: inline-block; transform: translateY(110%); }
+
+    .hero-headline em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--baby-blue);
+    }
+
+    .hero-tagline {
+      font-family: var(--font-light);
+      font-size: clamp(1rem, 1.8vw, 1.25rem);
+      font-style: italic;
+      color: rgba(255,255,255,0.55);
+      max-width: 460px;
+      line-height: 1.65;
+      margin-bottom: 3.5rem;
+      opacity: 0;
+    }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      opacity: 0;
+    }
+
+    .hero-stat .s-num {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: #fff;
+      display: block;
+      line-height: 1;
+    }
+
+    .hero-stat .s-label {
+      font-family: var(--font-light);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--baby-blue);
+      margin-top: 0.2rem;
+      display: block;
+    }
+
+    .hero-sep {
+      width: 1px;
+      height: 44px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* Awards strip */
+    .awards-strip {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,0.04);
+      border-top: 1px solid rgba(111,163,199,0.18);
+      padding: 1.2rem 4.5rem;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+      opacity: 0;
+    }
+
+    .aw-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .aw-dot {
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--baby-blue);
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .aw-dot::after {
+      content: '';
+      width: 5px;
+      height: 5px;
+      background: var(--baby-blue);
+      border-radius: 50%;
+    }
+
+    .aw-text {
+      font-family: var(--font-light);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .aw-text strong {
+      color: var(--baby-blue);
+      font-weight: 400;
+    }
+
+    /* ======================================================
+       SECTION II : OUR STORY
+    ====================================================== */
+    #story {
+      background: var(--cream);
+    }
+
+    #story::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 32%;
+      height: 100%;
+      background: var(--pale-blue);
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      margin-top: 4.5rem;
+    }
+
+    .feat-card {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    .feat-rule {
+      width: 28px;
+      height: 2px;
+      background: var(--baby-blue);
+      margin-bottom: 1rem;
+    }
+
+    .feat-num {
+      font-family: var(--font-light);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      color: var(--baby-blue);
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+
+    .feat-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 0.7rem;
+      line-height: 1.25;
+    }
+
+    .feat-card p {
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+
+    /* ======================================================
+       SECTION III : ADVISOR
+    ====================================================== */
+    #advisor {
+      background: var(--cream-dark);
+      overflow: hidden;
+    }
+
+    .adv-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .adv-img-wrap {
+      opacity: 0;
+      transform: translateX(-28px);
+    }
+
+    .adv-frame {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .adv-frame::before {
+      content: '';
+      position: absolute;
+      inset: -9px;
+      border: 1px solid var(--baby-blue);
+      opacity: 0.35;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .adv-frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 55%, rgba(13,30,60,0.35) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .adv-frame img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      filter: sepia(0.08) contrast(1.04);
+      transition: transform 0.9s var(--ease-out);
+    }
+
+    .adv-frame:hover img { transform: scale(1.04); }
+
+    .adv-caption {
+      font-family: var(--font-light);
+      font-size: 0.62rem;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 0.8rem;
+    }
+
+    .adv-content {
+      opacity: 0;
+      transform: translateX(28px);
+    }
+
+    .adv-name {
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.1;
+      margin-bottom: 0.3rem;
+    }
+
+    .adv-title {
+      font-family: var(--font-light);
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--baby-blue);
+      display: block;
+      margin-bottom: 2rem;
+    }
+
+    .adv-quote {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--navy);
+      line-height: 1.5;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 1.4rem 0;
+      margin: 1.8rem 0;
+    }
+
+    .adv-bio {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.88;
+      color: var(--ink);
+    }
+
+    .adv-bio + .adv-bio { margin-top: 1.2rem; }
+
+    .adv-stats {
+      display: flex;
+      gap: 2.2rem;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .adv-stat .st-num {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      color: var(--blue);
+      display: block;
+      line-height: 1;
+    }
+
+    .adv-stat .st-label {
+      font-family: var(--font-light);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.25rem;
+      display: block;
+    }
+
+    /* ======================================================
+       SECTION IV : EDITORS
+    ====================================================== */
+    #editors { background: var(--cream); }
+
+    .editors-intro {
+      max-width: 580px;
+      margin-bottom: 4rem;
+    }
+
+    .editors-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--rule);
+    }
+
+    .ed-card {
+      padding: 1.4rem 1.5rem;
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: background 0.3s;
+      cursor: default;
+    }
+
+    .ed-card:nth-child(3n) { border-right: none; }
+
+    .ed-card:hover { background: rgba(200, 222, 240, 0.28); }
+
+    .ed-initial {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: var(--pale-blue);
+      display: block;
+      line-height: 1;
+      margin-bottom: 0.45rem;
+      transition: color 0.3s;
+    }
+
+    .ed-card:hover .ed-initial { color: var(--mid-blue); }
+
+    .ed-name {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--navy);
+      line-height: 1.35;
+    }
+
+    .ed-role {
+      font-family: var(--font-light);
+      font-size: 0.57rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ======================================================
+       SECTION V : PAST EDITIONS
+    ====================================================== */
+    #editions {
+      background: var(--navy);
+      overflow: hidden;
+    }
+
+    #editions .ch-divider .ch-label { color: var(--baby-blue); }
+    #editions .section-eyebrow { color: var(--baby-blue); opacity: 0; }
+    #editions .section-heading { color: #fff; }
+    #editions .section-heading em { color: var(--baby-blue); }
+
+    .editions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .ed-cover-card {
+      opacity: 0;
+      transform: translateY(24px);
+      cursor: default;
+    }
+
+    .ed-cover-img-wrap {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      background: var(--blue);
+    }
+
+    .ed-cover-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: sepia(0.1);
+      transition: transform 0.65s var(--ease-out), filter 0.5s;
+    }
+
+    .ed-cover-card:hover .ed-cover-img-wrap img {
+      transform: scale(1.06);
+      filter: sepia(0);
+    }
+
+    .ed-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      background: linear-gradient(145deg, var(--blue), var(--navy));
+    }
+
+    .ed-placeholder .ph-year {
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.1;
+    }
+
+    .ed-placeholder .ph-label {
+      font-family: var(--font-light);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--baby-blue);
+      margin-top: 0.5rem;
+    }
+
+    .ed-cover-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(13,30,60,0.65) 0%, transparent 55%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      display: flex;
+      align-items: flex-end;
+      padding: 1rem 1.1rem;
+    }
+
+    .ed-cover-card:hover .ed-cover-overlay { opacity: 1; }
+
+    .ed-cover-overlay span {
+      font-family: var(--font-light);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .ed-meta { padding: 0.9rem 0; }
+
+    .ed-year {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: #fff;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .ed-volume {
+      font-family: var(--font-light);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--baby-blue);
+    }
+
+    /* ======================================================
+       SECTION VI : JOIN + AWARDS
+    ====================================================== */
+    #join { background: var(--cream); overflow: hidden; }
+
+    #join::after {
+      content: '"';
+      position: absolute;
+      right: -0.05em;
+      top: -0.15em;
+      font-family: var(--font-display);
+      font-size: 18rem;
+      color: var(--pale-blue);
+      opacity: 0.28;
+      line-height: 1;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .join-layout {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      margin-top: 3.5rem;
+    }
+
+    .join-card {
+      background: var(--navy);
+      padding: 3rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .join-card.alt { background: var(--blue); }
+
+    .join-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      color: #fff;
+      margin-bottom: 1.4rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .join-card p {
+      font-family: var(--font-body);
+      font-size: 0.94rem;
+      color: rgba(255,255,255,0.62);
+      line-height: 1.82;
+      margin-bottom: 0.9rem;
+    }
+
+    .info-list {
+      list-style: none;
+      margin-top: 1.4rem;
+    }
+
+    .info-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      padding: 0.7rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      line-height: 1.5;
+    }
+
+    .info-list li::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      background: var(--baby-blue);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 0.55rem;
+    }
+
+    /* Awards block */
+    .awards-block {
+      position: relative;
+      z-index: 1;
+      margin-top: 5rem;
+      padding-top: 4rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .awards-row {
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+      margin-top: 2.5rem;
+    }
+
+    .aw-badge {
+      flex: 1;
+      min-width: 190px;
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    .aw-medal {
+      font-size: 2.2rem;
+      display: block;
+      margin-bottom: 0.6rem;
+      line-height: 1;
+    }
+
+    .aw-badge h4 {
+      font-family: var(--font-display);
+      font-size: 1.02rem;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+
+    .aw-badge p {
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ======================================================
+       FOOTER
+    ====================================================== */
+    footer {
+      background: var(--navy);
+      padding: 3rem 4.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(111,163,199,0.12);
+    }
+
+    .foot-left {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.4;
+    }
+
+    .foot-left span {
+      display: block;
+      font-family: var(--font-light);
+      font-size: 0.65rem;
+      font-style: italic;
+      color: rgba(255,255,255,0.35);
+      margin-top: 0.3rem;
+    }
+
+    .foot-right {
+      font-family: var(--font-light);
+      font-size: 0.6rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      text-align: right;
+      line-height: 2;
+    }
+
+    /* ======================================================
+       RESPONSIVE
+    ====================================================== */
+    @media (max-width: 1024px) {
+      :root { --sidebar-w: 0px; }
+      #sidebar { display: none; }
+      #progress-bar { left: 0; }
+      .adv-layout { grid-template-columns: 1fr; }
+      .editions-grid { grid-template-columns: repeat(2, 1fr); }
+      .join-layout { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .editors-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .section-inner { padding: 3.5rem 1.8rem; }
+      .hero-content { padding: 4rem 1.8rem 9rem; }
+      .awards-strip { padding: 1rem 1.8rem; gap: 1.5rem; flex-direction: column; }
+      .editions-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .editors-grid { grid-template-columns: 1fr 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .awards-row { flex-direction: column; gap: 2rem; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+      .foot-right { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- ======================== SIDEBAR ======================== -->
+<aside id="sidebar">
+  <div class="sb-masthead">
+    <img src="images/image.png" alt="Mind's Eye" class="sb-logo">
+    <div class="sb-title">Mind's Eye</div>
+    <div class="sb-subtitle">South Windsor High School<br>Literary Magazine</div>
+  </div>
+  <nav>
+    <span class="nav-label">Contents</span>
+    <a class="nav-link active" data-target="overview">Overview</a>
+    <a class="nav-link"        data-target="story">Our Story</a>
+    <a class="nav-link"        data-target="advisor">The Advisor</a>
+    <a class="nav-link"        data-target="editors">Meet the Editors</a>
+    <a class="nav-link"        data-target="editions">Past Editions</a>
+    <a class="nav-link"        data-target="join">Join Us</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-foot-text">Room 129<br>South Windsor, CT</div>
+    <span class="sb-issue">2024&ndash;25 Edition</span>
+  </div>
+</aside>
+
+<!-- ======================== MAIN ======================== -->
+<main id="main">
+
+  <!-- ====== SECTION I: OVERVIEW ====== -->
+  <section class="section" id="overview">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-content">
+      <div class="hero-flag" id="heroFlag">South Windsor High School &nbsp;&middot;&nbsp; Established Over 20 Years Ago</div>
+      <h1 class="hero-headline" id="heroHeadline">
+        <span class="word-wrap"><span class="word">Mind's</span></span><br>
+        <span class="word-wrap"><span class="word"><em>Eye</em></span></span>
+      </h1>
+      <p class="hero-tagline" id="heroTagline">
+        A literary magazine where every voice finds its page, and every page becomes a home for the imagination.
+      </p>
+      <div class="hero-stats" id="heroStats">
+        <div class="hero-stat">
+          <span class="s-num">20+</span>
+          <span class="s-label">Years of Publishing</span>
+        </div>
+        <div class="hero-sep"></div>
+        <div class="hero-stat">
+          <span class="s-num">22</span>
+          <span class="s-label">Student Editors</span>
+        </div>
+        <div class="hero-sep"></div>
+        <div class="hero-stat">
+          <span class="s-num">All</span>
+          <span class="s-label">Voices Welcome</span>
+        </div>
+      </div>
+    </div>
+    <div class="awards-strip" id="awardsStrip">
+      <div class="aw-item">
+        <div class="aw-dot"></div>
+        <span class="aw-text"><strong>National Gold Medal</strong>, Scholastic Art and Writing, Critical Essay</span>
+      </div>
+      <div class="aw-item">
+        <div class="aw-dot"></div>
+        <span class="aw-text"><strong>Silver and Gold Key Winners</strong>, Scholastic Art and Writing Awards</span>
+      </div>
+      <div class="aw-item">
+        <div class="aw-dot"></div>
+        <span class="aw-text"><strong>Award-Winning</strong> Literary Magazine Publication</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SECTION II: OUR STORY ====== -->
+  <section class="section" id="story">
+    <div class="section-inner">
+      <div class="ch-divider">
+        <span class="ch-label">Chapter I &nbsp;&middot;&nbsp; Our Story</span>
+        <div class="ch-rule"></div>
+      </div>
+
+      <span class="section-eyebrow">A tradition of creative expression</span>
+      <h2 class="section-heading" style="margin-bottom:2.5rem;">Where Art and<br><em>Words Meet</em></h2>
+
+      <p class="body-text drop-cap">
+        Mind's Eye is a student-run literary magazine at South Windsor High School, publishing original student artwork and creative writing every school year. For over twenty years the magazine has served as a home for the creative voices that fill the hallways of SWHS, from poets and essayists to visual artists and storytellers of every kind.
+      </p>
+
+      <div class="pull-quote">
+        <blockquote>"Mind's Eye has served as a way for me to artistically express myself in a community that fosters growth and friendship around the arts."</blockquote>
+        <cite>Kyle Garneau, former member</cite>
+      </div>
+
+      <p class="body-text">
+        Each year the club collects and reviews student submissions, and then the entire membership votes together on which works will be featured. No single voice decides who is heard. The magazine welcomes fiction, poetry, personal essays, visual art, and every form of creative expression in between.
+      </p>
+
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-rule"></div>
+          <span class="feat-num">01</span>
+          <h3>The Magazine</h3>
+          <p>Every spring we release a printed literary magazine featuring original student art and writing, selected and curated by the full editorial board together.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-rule"></div>
+          <span class="feat-num">02</span>
+          <h3>Coffee Houses</h3>
+          <p>Throughout the year we host open-mic style coffee house events where students share poetry, music, essays, and art in a warm and welcoming space.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-rule"></div>
+          <span class="feat-num">03</span>
+          <h3>Writing Contests</h3>
+          <p>We hold writing and poetry contests open to all SWHS students, with standout work submitted to the Scholastic Art and Writing Awards and beyond.</p>
+        </div>
+      </div>
+
+      <div class="pull-quote" style="margin-top:4rem;">
+        <blockquote>"It was really fun. People put up decorations, rearranged the furniture, and had a signup sheet for people who wanted to share. There was a lot of poetry, art, and essays."</blockquote>
+        <cite>Sharon Madda, club member, on the coffee house</cite>
+      </div>
+
+      <p class="body-text">
+        The coffee house is a beloved tradition: part open-mic night, part community gathering. Coffee and refreshments are served, students sign up to share whatever moves them, and the room is always full of warmth. Musicians, poets, and visual artists all find their audience here. Everyone is welcome, whether or not they are a club member.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== SECTION III: ADVISOR ====== -->
+  <section class="section" id="advisor">
+    <div class="section-inner">
+      <div class="ch-divider">
+        <span class="ch-label">Chapter II &nbsp;&middot;&nbsp; The Advisor</span>
+        <div class="ch-rule"></div>
+      </div>
+
+      <div class="adv-layout">
+        <div class="adv-img-wrap">
+          <div class="adv-frame">
+            <img src="images/flachs.png" alt="Mrs. Amanda Flachsbart, Advisor of Mind's Eye">
+          </div>
+          <p class="adv-caption">Mrs. Amanda Flachsbart, Lead Advisor, Mind's Eye Literary Magazine</p>
+        </div>
+
+        <div class="adv-content">
+          <span class="adv-title">Lead Advisor, Mind's Eye</span>
+          <h2 class="adv-name">Mrs. Amanda<br>Flachsbart</h2>
+
+          <p class="adv-bio" style="margin-top:1.5rem;">
+            Mrs. Flachsbart has been overseeing Mind's Eye for six years, bringing with her a deep love of art and writing and a genuine enthusiasm for the creative work students produce outside the curriculum. Under her guidance the magazine has continued a tradition stretching back more than two decades.
+          </p>
+
+          <div class="adv-quote">
+            "I love art and writing, and because I follow a specific curriculum I don't always get to see my students' creative writing. I think it'll be a great opportunity for students throughout the building to express themselves creatively."
+          </div>
+
+          <p class="adv-bio">
+            The club's democratic approach to judging reflects her values: every submission is reviewed by the full membership, ensuring that no single perspective gatekeeps the creative voices of the school.
+          </p>
+
+          <p class="adv-bio">
+            "The judging itself takes place with all the members and everybody kind of looks and reviews each submission, so that it's not just one or two students deciding on who wins," Flachsbart explained.
+          </p>
+
+          <div class="adv-stats">
+            <div class="adv-stat">
+              <span class="st-num">6</span>
+              <span class="st-label">Years as Advisor</span>
+            </div>
+            <div class="adv-stat">
+              <span class="st-num">20+</span>
+              <span class="st-label">Years the Club Has Run</span>
+            </div>
+            <div class="adv-stat">
+              <span class="st-num">Rm 129</span>
+              <span class="st-label">Find Her Here</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SECTION IV: EDITORS ====== -->
+  <section class="section" id="editors">
+    <div class="section-inner">
+      <div class="ch-divider">
+        <span class="ch-label">Chapter III &nbsp;&middot;&nbsp; The Editors</span>
+        <div class="ch-rule"></div>
+      </div>
+
+      <div class="editors-intro">
+        <span class="section-eyebrow">2024&ndash;25 Editorial Board</span>
+        <h2 class="section-heading" style="margin-bottom:1.5rem;">Meet the<br><em>Editors</em></h2>
+        <p class="body-text" style="max-width:100%;">
+          The editorial board of Mind's Eye is made up of dedicated student readers, writers, and artists who give their time to curating the voices of South Windsor High School. Together they read every submission, discuss every piece, and shape the magazine with care and collective wisdom.
+        </p>
+      </div>
+
+      <div class="editors-grid" id="editorsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ====== SECTION V: PAST EDITIONS ====== -->
+  <section class="section" id="editions">
+    <div class="section-inner">
+      <div class="ch-divider">
+        <span class="ch-label">Chapter IV &nbsp;&middot;&nbsp; Archive</span>
+        <div class="ch-rule"></div>
+      </div>
+
+      <span class="section-eyebrow">A Legacy in Print</span>
+      <h2 class="section-heading">Past <em>Editions</em></h2>
+
+      <div class="editions-grid" id="editionsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ====== SECTION VI: JOIN + AWARDS ====== -->
+  <section class="section" id="join">
+    <div class="section-inner">
+      <div class="ch-divider">
+        <span class="ch-label">Chapter V &nbsp;&middot;&nbsp; Join Us</span>
+        <div class="ch-rule"></div>
+      </div>
+
+      <span class="section-eyebrow">Open to All Students</span>
+      <h2 class="section-heading">Find Your <em>Place</em><br>in the Pages</h2>
+
+      <div class="join-layout">
+        <div class="join-card">
+          <h3>Join the Club</h3>
+          <p>
+            Mind's Eye welcomes any student who loves reading, writing, art, or simply being part of a creative community. The club is relaxed, encouraging, and always open to new voices and new ideas.
+          </p>
+          <p>
+            "Any student who enjoys reading and/or writing will probably appreciate the club environment. It is very relaxed and encouraging of creativity and freedom to express oneself. We are always open to new people and new ideas."
+          </p>
+          <ul class="info-list">
+            <li>Meetings held in Room 129</li>
+            <li>Ask Mrs. Flachsbart to join the classroom and sign up for Remind notifications</li>
+            <li>No prior experience required, only enthusiasm and an open mind</li>
+            <li>Open to all grades and all backgrounds</li>
+          </ul>
+        </div>
+
+        <div class="join-card alt">
+          <h3>Submit Your Work</h3>
+          <p>
+            The magazine accepts student submissions throughout the year. Poetry, fiction, personal essays, and visual art are all welcome. There are no wrong answers when it comes to creative expression.
+          </p>
+          <p>
+            Each fall we run a writing contest, and each spring an art contest. Submissions are reviewed collectively by all editors, giving every piece a fair and thoughtful read.
+          </p>
+          <ul class="info-list">
+            <li>Writing contest deadline: December</li>
+            <li>Spring art contest announced at the start of each semester</li>
+            <li>Open to all SWHS students, not only club members</li>
+            <li>Fiction, poetry, personal essays, and visual art all accepted</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Awards -->
+      <div class="awards-block">
+        <div class="ch-divider" style="margin-bottom:1rem;">
+          <span class="ch-label" style="color:var(--muted);">Recognition and Honors</span>
+          <div class="ch-rule" style="background:linear-gradient(to right, var(--rule), transparent);"></div>
+        </div>
+        <h3 class="section-heading" style="font-size:1.75rem;margin-bottom:0.5rem;">Awards and <em>Honors</em></h3>
+
+        <div class="awards-row">
+          <div class="aw-badge">
+            <span class="aw-medal">&#9733;</span>
+            <h4>National Gold Medal</h4>
+            <p>Scholastic Art and Writing Awards, Critical Essay. One of the most prestigious recognitions in student writing in the United States.</p>
+          </div>
+          <div class="aw-badge">
+            <span class="aw-medal" style="color:var(--mid-blue);">&#9670;</span>
+            <h4>Gold and Silver Keys</h4>
+            <p>Multiple Scholastic Art and Writing Gold and Silver Key recipients across poetry, fiction, and visual art categories.</p>
+          </div>
+          <div class="aw-badge">
+            <span class="aw-medal" style="color:var(--baby-blue);">&#9632;</span>
+            <h4>Award-Winning Magazine</h4>
+            <p>The Mind's Eye publication itself has been recognized for its curation, design, and editorial quality year after year.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-left">
+      Mind's Eye
+      <span>South Windsor High School Literary Magazine</span>
+    </div>
+    <div class="foot-right">
+      Room 129 &nbsp;&middot;&nbsp; South Windsor, CT<br>
+      Advisor: Mrs. Amanda Flachsbart<br>
+      &copy; 2025 Mind's Eye Literary Magazine
+    </div>
+  </footer>
+
+</main>
+
+<script>
+  // ============================================================
+  // DATA
+  // ============================================================
+  const EDITORS = [
+    "Vaishnaavi Abirami Bhaskar", "Eliza Blanchfield",     "Karthik Srikumar",
+    "Maribeth Casionan",          "Hailey Chapman",         "Angelina Cheung",
+    "Isabella Daigle",            "Arnisha De",             "Anvi Javangula",
+    "Navya Jayaraj",              "Hasini Kasam",           "Erica Luo",
+    "Sharon Madda",               "Madeline Milheiro",      "Asim Mohamed Kasim",
+    "Emily Porter",               "Karthik Prem",           "Shriya Prem",
+    "Mia Santiago",               "Thirunavukarasu Sivaganesh", "Gopichandana Tatiguntla",
+    "Sabrina Vongsarasinh"
+  ];
+
+  const EDITIONS = [
+    { year: "2024-25", img: "images/image.png"  },
+    { year: "2023-24", img: "images/image2.png" },
+    { year: "2022-23", img: "images/image3.png" },
+    { year: "2021-22", img: "images/image4.png" },
+    { year: "2020-21", img: null                },
+    { year: "2019-20", img: null                },
+  ];
+
+  // ============================================================
+  // BUILD EDITORS GRID
+  // ============================================================
+  const editorsGrid = document.getElementById("editorsGrid");
+  EDITORS.forEach(name => {
+    const card = document.createElement("div");
+    card.className = "ed-card";
+    card.innerHTML = `
+      <span class="ed-initial">${name.charAt(0)}</span>
+      <div class="ed-name">${name}</div>
+      <div class="ed-role">Editor</div>
+    `;
+    editorsGrid.appendChild(card);
+  });
+
+  // ============================================================
+  // BUILD EDITIONS GRID
+  // ============================================================
+  const editionsGrid = document.getElementById("editionsGrid");
+  EDITIONS.forEach(ed => {
+    const card = document.createElement("div");
+    card.className = "ed-cover-card";
+    const coverHTML = ed.img
+      ? `<img src="${ed.img}" alt="Mind's Eye ${ed.year}" loading="lazy">`
+      : `<div class="ed-placeholder"><div class="ph-year">${ed.year}</div><div class="ph-label">Mind's Eye</div></div>`;
+    card.innerHTML = `
+      <div class="ed-cover-img-wrap">
+        ${coverHTML}
+        <div class="ed-cover-overlay"><span>Mind's Eye</span></div>
+      </div>
+      <div class="ed-meta">
+        <span class="ed-year">${ed.year}</span>
+        <span class="ed-volume">Mind's Eye &nbsp;&middot;&nbsp; South Windsor High School</span>
+      </div>
+    `;
+    editionsGrid.appendChild(card);
+  });
+
+  // ============================================================
+  // PROGRESS BAR
+  // ============================================================
+  const progressBar = document.getElementById("progress-bar");
+  window.addEventListener("scroll", () => {
+    const p = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+    progressBar.style.transform = `scaleX(${p})`;
+  }, { passive: true });
+
+  // ============================================================
+  // SIDEBAR ACTIVE STATE
+  // ============================================================
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  navLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      const target = document.getElementById(link.dataset.target);
+      if (target) target.scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
+  const sections = document.querySelectorAll(".section");
+  const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove("active"));
+        const lnk = document.querySelector(`[data-target="${entry.target.id}"]`);
+        if (lnk) lnk.classList.add("active");
+      }
+    });
+  }, { threshold: 0.38 });
+  sections.forEach(s => sectionObserver.observe(s));
+
+  // ============================================================
+  // GSAP
+  // ============================================================
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Hero entrance sequence
+  gsap.timeline({ delay: 0.15 })
+    .to("#heroFlag",      { opacity: 1, y: 0, duration: 0.75, ease: "power2.out" })
+    .to(".hero-headline .word", { y: 0, duration: 1.05, stagger: 0.18, ease: "power3.out" }, "-=0.3")
+    .to("#heroTagline",   { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.25")
+    .to("#heroStats",     { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.2")
+    .to("#awardsStrip",   { opacity: 1,        duration: 0.75, ease: "power2.out" }, "-=0.15");
+
+  // Hero BG parallax
+  gsap.to("#heroBg", {
+    yPercent: 18,
+    ease: "none",
+    scrollTrigger: {
+      trigger: "#overview",
+      start: "top top",
+      end: "bottom top",
+      scrub: 1
+    }
+  });
+
+  // Generic scroll-triggered fade-up
+  function scrollReveal(sel, opts = {}) {
+    document.querySelectorAll(sel).forEach((el, i) => {
+      gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        x: 0,
+        duration: opts.dur   || 0.8,
+        delay:    (opts.stag || 0) * i,
+        ease:     opts.ease  || "power2.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 90%",
+          toggleActions: "play none none none"
+        }
+      });
+    });
+  }
+
+  scrollReveal(".ch-divider",    { dur: 0.65 });
+  scrollReveal(".section-eyebrow", { dur: 0.7 });
+  scrollReveal(".section-heading", { dur: 0.9 });
+  scrollReveal(".body-text",     { dur: 0.8,  stag: 0.06 });
+  scrollReveal(".pull-quote",    { dur: 0.9 });
+  scrollReveal(".feat-card",     { dur: 0.8,  stag: 0.13 });
+  scrollReveal(".ed-card",       { dur: 0.5,  stag: 0.035 });
+  scrollReveal(".ed-cover-card", { dur: 0.85, stag: 0.1 });
+  scrollReveal(".join-card",     { dur: 0.8,  stag: 0.16 });
+  scrollReveal(".aw-badge",      { dur: 0.8,  stag: 0.12 });
+
+  // Advisor side-slide entrance
+  gsap.to(".adv-img-wrap", {
+    opacity: 1, x: 0, duration: 1.05, ease: "power2.out",
+    scrollTrigger: { trigger: ".adv-layout", start: "top 82%" }
+  });
+  gsap.to(".adv-content", {
+    opacity: 1, x: 0, duration: 1.05, delay: 0.18, ease: "power2.out",
+    scrollTrigger: { trigger: ".adv-layout", start: "top 82%" }
+  });
+</script>
+</body>
+</html>
